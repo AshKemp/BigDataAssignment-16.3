@@ -1,0 +1,29 @@
+The different row-level transactions available in Hive 0.14 are as follows:
+1.Insert
+2.Delete
+3.Update
+
+Properties to be set for the operations to work properly
+hive>set hive.support.concurrency = true;
+ 
+hive>set hive.enforce.bucketing = true;
+ 
+hive>set hive.exec.dynamic.partition.mode = nonstrict;
+ 
+hive>set hive.txn.manager = org.apache.hadoop.hive.ql.lockmgr.DbTxnManager;
+ 
+hive>set hive.compactor.initiator.on = true;
+ 
+hive>set hive.compactor.worker.threads = a positive number on at least one instance of the Thrift metastore service;
+
+#To create table
+CREATE TABLE college(clg_id int,clg_name string,clg_loc string) clustered by (clg_id) into 5 buckets stored as orc TBLPROPERTIES('transactional'='true');
+
+#To insert data into hive table
+INSERT INTO table college values(1,'nec','nlr'),(2,'vit','vlr'),(3,'srm','chen'),(4,'lpu','del'),(5,'stanford','uk'),(6,'JNTUA','atp'),(7,'cambridge','us');
+
+#To update data in hive table
+UPDATE college set clg_id = 8 where clg_id = 7;
+
+#Update operation on non-bucketed column
+UPDATE college set clg_name = 'IIT' where clg_id = 6;
